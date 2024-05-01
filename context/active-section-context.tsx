@@ -1,7 +1,7 @@
 "use client";
-import { links } from "@/lib/data";
+
 import type { SectionName } from "@/lib/types";
-import React, { useState, createContext, use, useContext } from "react";
+import React, { useState, createContext, useContext } from "react";
 
 type ActiveSectionContextProviderProps = {
   children: React.ReactNode;
@@ -17,11 +17,12 @@ type ActiveSectionContextType = {
 export const ActiveSectionContext =
   createContext<ActiveSectionContextType | null>(null);
 
-function ActiveSectionContextProvider({
+export default function ActiveSectionContextProvider({
   children,
 }: ActiveSectionContextProviderProps) {
   const [activeSection, setActiveSection] = useState<SectionName>("Home");
-  const [timeOfLastClick, setTimeOfLastClick] = useState(0);
+  const [timeOfLastClick, setTimeOfLastClick] = useState(0); // we need to keep track of this to disable the observer temporarily when user clicks on a link
+
   return (
     <ActiveSectionContext.Provider
       value={{
@@ -36,15 +37,12 @@ function ActiveSectionContextProvider({
   );
 }
 
-export default ActiveSectionContextProvider;
-
-//this custom we've created to deal with the context value being null, whenever we use the context, typescript gives error saying that context can return null values- values can be null if the context is used outside the Provider element tag
 export function useActiveSectionContext() {
   const context = useContext(ActiveSectionContext);
 
-  if (context == null) {
+  if (context === null) {
     throw new Error(
-      "Use ActiveSectionContext must be used within an ActiveSectionContextProvider"
+      "useActiveSectionContext must be used within an ActiveSectionContextProvider"
     );
   }
 
